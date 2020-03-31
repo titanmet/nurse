@@ -29,6 +29,35 @@ public class RegisterTest {
         Assert.assertSame(one, retrievedOne);
         Assert.assertSame(two, retrievedTwo);
         Assert.assertNotSame(retrievedOne, retrievedTwo);
+    }
 
+    @Test
+    public void canRegisterByTypeAndRetrieve() {
+        Glucose glucose = new Glucose();
+        register.add(glucose);
+        Water water = new Water();
+        register.add(water);
+        Glucose retrievedGlucose = register.get(Glucose.class);
+        Water retrievedWater = register.get(Water.class);
+        Assert.assertSame(glucose, retrievedGlucose);
+        Assert.assertSame(water, retrievedWater);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void secondRegisterOgSameNameThrowsException() {
+        register.add("same", new Object());
+        register.add("same", new Object());
+    }
+
+    @Test
+    public void patientShouldBeInjectedByGlucose() {
+        Glucose glucose = new Glucose();
+        register.add(new Patient());
+        register.add(glucose);
+        register.inject();
+        Patient rerievedPatient = register.get(Patient.class);
+        Glucose injectedGlucose = rerievedPatient.getGlucose();
+        Assert.assertNotNull(injectedGlucose);
+        Assert.assertSame(glucose, injectedGlucose);
     }
 }
